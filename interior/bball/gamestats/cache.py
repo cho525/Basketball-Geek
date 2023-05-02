@@ -1,6 +1,6 @@
 #import datetime
 
-from .models import Teams, upcGames, pastGames, Players
+from .models import Teams, upcGames, pastGames, Players, lastGames
 import ast
 from gamestats import datefuncs, api, apifuncs
 
@@ -25,8 +25,8 @@ def get_teamlist():
     #teams = Teams.objects.filter(season = "2022").all()
     for team in teams:
         ls += [team['name']]
-        ls2 = sorted(ls)
-        ls3 = [(l,l) for l in ls2]
+    ls2 = sorted(ls)
+    ls3 = [(l,l) for l in ls2]
     return ls3
 
 def get_players(teamid):
@@ -35,6 +35,15 @@ def get_players(teamid):
     for player in players:
         ls += [player]
     return ls
+
+def get_playerlist():
+    players = Players.objects.values("name").distinct()
+    ls = []
+    for player in players:
+        ls += [player['name']]
+    ls2 = sorted(ls)
+    ls3 = [(l,l) for l in ls2]
+    return ls3
 
     
 '''def get_upcGames():
@@ -84,34 +93,50 @@ def cache_pastteams(year):
     for res in result:
         #Teams.objects.create(name = res[0], ast = res[1], orb = res[2], ftd = res[3], wins = res[4], losses = res[5], pts = res[6], season = year)
         ref = Teams.objects.filter(season = "2023").filter(name = res[0]).first()
-        Teams.objects.create(name = res[0], wins = res[4], losses = res[5], pts = res[6], season = year, teamid = ref.teamid, conf = ref.conf, opts = res[7])
+        Teams.objects.create(name = res[0], wins = res[4], losses = res[5], pts = res[6], season = year, teamid = ref.teamid, conf = ref.conf, code = ref.code, logo = ref.logo, opts = res[7])
         i += 1
     return
 
 
 def cache_currteams():
     dict = api.getcurrteams()
-    print(dict)
+    dict2 = api.getlogos()
     result = apifuncs.find_curr_teams(dict)
     for res in result:
-        Teams.objects.create(name = res[0], pts = res[1], teamid = res[2], wins = res[3], losses = res[4], conf = res[5], opts = res[6], season = "2023")
+        if res[0] == "Los Angeles Clippers":
+            logo = apifuncs.find_logo(dict2, "LA Clippers")
+        else:
+            logo = apifuncs.find_logo(dict2, res[0])
+        Teams.objects.create(name = res[0], pts = res[1], teamid = res[2], wins = res[3], losses = res[4], conf = res[5], opts = res[6], code = res[7], logo = logo, season = "2023")
     return
 
 def cache_upcgames():
     i = 0
-    info = api.getgames()
+    info = api.getgames("odds", {"regions":"us","oddsFormat":"decimal","markets":"h2h,spreads","dateFormat":"iso"})
     result = apifuncs.find_upcgames(info)
     for res in result:
-        upcGames.objects.create(home = res[0], away = res[1], time = res[2], gameid = i)
+        upcGames.objects.create(home = res[0], away = res[1], time = res[2], odds = res[3] + ' ' + res[4], gameid = i)
             #pastGames.objects.create(home = res[0], away = res[1], time = res[2], homescore = res[3], awayscore = res[4], gameid = i)
         i += 1
     return
 
 def cache_pastgames():
     i = 0
-    info = api.getgames()
+    info = api.getgames("scores", {"daysFrom":"3"})
     result = apifuncs.find_pastgames(info)
     for res in result:
+        lg = lastGames.objects.filter(time = res[2]).first()
+        if lg == None:
+                        
+            hg = Teams.objects.filter(name = res[0]).first()
+            ag = Teams.objects.filter(name = res[1]).first()
+
+            lastGames.objects.filter(name = hg.name).first().delete()
+            lastGames.objects.filter(name = ag.name).first().delete()
+
+            lastGames.objects.create(name = hg.name, teamid = hg.teamid, home = res[0], away = res[1], time = res[2], homescore = res[3], awayscore = res[4], gameid = -1)
+            lastGames.objects.create(name = ag.name, teamid = ag.teamid, home = res[0], away = res[1], time = res[2], homescore = res[3], awayscore = res[4], gameid = -1)
+
         pastGames.objects.create(home = res[0], away = res[1], time = res[2], homescore = res[3], awayscore = res[4], gameid = i)
         i += 1
     return

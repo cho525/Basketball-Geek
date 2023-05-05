@@ -1,3 +1,3 @@
 NBA Wizard
 
-Python(Django), HTML, CSS Web-Application that allows user to view various NBA related stats. 
+Python(Django), HTML, CSS, SQLite Web-Application that allows user to view various NBA related stats. 

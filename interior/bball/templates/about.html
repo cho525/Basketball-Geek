@@ -1,32 +1,60 @@
-<header>User's Guide</header>
+{% load static %}
 
-<h4>Welcome to NBA Wizard, below are the supported features and how to use them!</h4>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basketball Project</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'display.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'about.css' %}">
+</head>
+<body>
+    <div class="banner">
+		{% if user.is_authenticated %}
+		    <a href="/bball/team/">Team Info</a>
+		    <a href="/bball/player/">Player Info</a>
+		    <a href="/bball/standing/">NBA Standings</a>
+		    <a href="/bball/past-games/">Past Games</a>
+		    <a href="/bball/upcoming-games/">Upcoming Games</a>
+            <a href="/bball/about/">User's Guide</a>
+            <a href="/logout/">Logout</a>
+		{% else %}
+		    <a href="/">Login</a>
+		{% endif %}
+	</div>
 
-<ul>
-    <li>Get Team Info:</li>
-        <ul>
-            <li>Select the team and the season you want to view and click submit</li>
-        </ul>
-        <br>
-    <li>Get Player Info:</li>
-        <ul>
-            <li>Select the player you want to view and click submit</li>
-        </ul>
-        <br>
-    <li>Get Standing:</li>
-        <ul>
-            <li>Select the team and the season you want to view and click submit</li>
-        </ul>
-        <br>
-    <li>Find Past Games:</li>
-        <ul>
-            <li>Automatically displays the most recent game played in descending order </li>
-        </ul>
-        <br>
-    <li>Find Upcoming Games:</li>
-        <ul>
-            <li>Automatically displays the upcoming matchups, by clicking the compare button, you can compare team stats and view their odds of winning</li>
-        </ul>
-  </ul>
+    <button class="goback-btn"><a href="/bball/">Go back</a></button>
 
-<h3><a href="/bball/">Get Back to home page</a></h3>
+    <header class="page-title">Welcome to NBA Wizard!</header>
+
+    <div class="feature-list-container">
+        <div class="feature-list-box">
+            <h5>Get Team Info</h5>
+            <p>Select the team and the season you want to view and click submit</p>
+        </div>
+
+        <div class="feature-list-box">
+            <h5>Get Player Info</h5>
+            <p>Select the player you want to view and click submit</p>
+        </div>
+
+        <div class="feature-list-box">
+            <h5>NBA Standings</h5>
+            <p>Select the team and the season you want to view and click submit</p>
+        </div>
+
+        <div class="feature-list-box">
+            <h5>Past Games</h5>
+            <p>Automatically displays the most recent game played in descending order</p>
+        </div>
+
+        <div class="feature-list-box">
+            <h5>Upcoming Games</h5>
+            <p>View upcoming matchups, compare team stats and view odds</p>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -12,7 +12,7 @@ table {
   
   th {
     text-align: left;
-    background-color: #6721f3;
+    background-color: #7521f3;
     color: #fff;
   }
   
@@ -21,7 +21,7 @@ table {
   }
   
   a {
-    color: #6721f3;
+    color: #7521f3;
   }
   
   @keyframes bounce-in {
